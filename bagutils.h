@@ -14,7 +14,7 @@ const char *ascii_str = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRS
 static inline void string_to_bag( char str[n_toy_types + 1])
 {
 	assert(str);
-	for( int tt; tt < n_toy_types; tt++ )
+	for( int tt = 0; tt < n_toy_types; tt++ )
 		str[tt] = (char) (strchr( ascii_str, str[tt] ) - ascii_str);
 	return;
 }

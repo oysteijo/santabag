@@ -2,6 +2,7 @@
 #include "toys.h"
 #include "bagutils.h"
 #include <stdio.h>
+#include <math.h>
 #include <stdlib.h>
 #include <assert.h>
 
@@ -19,6 +20,16 @@ static const int toy_maxcount[n_toy_types] = {
         [blocks] =  1000,
         [gloves] =   200
 };
+
+static void shuffle_array( int *array, int n )
+{
+    for( int i = n-1; i > 0; i-- ){
+        int idx = rand() % (i+1);
+        int tmp = array[i];
+        array[i] = array[idx];
+        array[idx] = tmp;
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -98,7 +109,6 @@ int main(int argc, char *argv[])
     int c = 0;
     for( int i = 0; i < n_toy_types; i++ )
         for( int j = 0; j < n_columns; j++ ){
-//            static const char *ascii_str = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
             const char n = (strchr(ascii_str,varnames[j][i]) - ascii_str);
             if(!n) continue;
             c++;
@@ -133,12 +143,55 @@ int main(int argc, char *argv[])
     printf("Objective at solution: %g\n", glp_mip_obj_val(lp));
     for (int i = 0; i < n_columns; i++ ){
         double x = glp_mip_col_val(lp, i+1);
-        if( x > 0.0 ){
-            char var[10];
-            strncpy(var, glp_get_col_name(lp, i+1), 10); 
-            printf("%s x %3g\n", var, x);
-        }
+        if( x > 0.0 )
+            printf("%s x %3g\n", glp_get_col_name(lp,i+1), x);
     } 
+
+    /* print to file */
+    /* First step for randomizing the toys is to generate an array of yoys to pick from,
+     * Then we random shuffle this array and the we pick sequencially.
+     * A shuffle code is so simple that make our own instead of using GSL */
+
+    int *number_array[n_toy_types];
+    for ( int i = 0 ; i < n_toy_types; i++ ) {
+        number_array[i] = malloc( toy_maxcount[i] * sizeof(int));
+        if(!number_array[i]){fprintf(stderr,"Fuck it! Let's go bowling!\n"); exit(1);}
+        for ( int j = 0 ; j < toy_maxcount[i] ; j++ )
+            number_array[i][j] = j;
+        shuffle_array( number_array[i], toy_maxcount[i] );
+    }
+    
+    int toy_counter[n_toy_types];
+    memcpy( toy_counter, toy_maxcount, n_toy_types * sizeof(int));
+
+    if( NULL == ( fp = fopen("submission.csv", "w" ))){
+        perror("submission.csv");
+        exit(1);  /* FIXME: cleanup first */
+    }
+    fprintf( fp, "Gifts\n");
+    /* Loop solutions */
+    for ( int col = 0; col < n_columns; col++ ){
+        double x = glp_mip_col_val(lp, col+1);
+        if ( x > 0.0 ){
+            char bag[10];
+            strncpy( bag, glp_get_col_name( lp, col+1 ), 10);
+            string_to_bag( bag );
+            int n_lines = (int) lround(x);
+            while ( n_lines-- ){
+                for ( int tt = 0 ; tt < n_toy_types; tt++ ){
+                    int ntoy = (int) bag[tt];
+                    while( ntoy-- )
+                        fprintf( fp, "%s_%d ", toy_to_string(tt), number_array[tt][--toy_counter[tt]]);
+                    /* Will I ever understand this code when I read it again? */
+                }
+                fprintf(fp,"\n");
+            }
+        }
+    }
+    fclose(fp);
+    /* Free the number_arrays */
+    for(int i=0; i < n_toy_types; i++ )
+        free( number_array[i] );
 
     /* housekeeping */
     glp_delete_prob(lp);
