@@ -23,3 +23,10 @@ so if you use the GCC on command line remember to set `-std=c99` or `-std=gnu99`
 The simulating tools uses [OpenMP](http://www.openmp.org/) to do naïve multithreading. If you do not want multithreading
 or do not want support for this, simply remove the `-fopenmp` compile flag and the `-lgomp` link library. (And
 ignore the pragma warning)
+
+## Bugs
+Oh my! I just realized that the $+mu + \alpha \sigma$ logic may be wrong! Please use $\alpha=0.0$ while I check
+how I could make such a mistake.
+
+## TODO
+Add lpsolve code. Code cleanup. Use better command line options for the tools. (getopt?)
