@@ -1,14 +1,15 @@
-#include "glpk.h"
 #include "toys.h"
 #include "bagutils.h"
+#include <glpk.h>
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <time.h>
 
 #define LINE_LEN 256
 #define MAX_N_BAGS 1000
-
+#define SUBMISSIONFILE "submission.csv"
 static const int toy_maxcount[n_toy_types] = {
         [horse]  =  1000,
         [ball]   =  1100,
@@ -21,6 +22,7 @@ static const int toy_maxcount[n_toy_types] = {
         [gloves] =   200
 };
 
+/* Plain Fisher-Yates */
 static void shuffle_array( int *array, int n )
 {
     for( int i = n-1; i > 0; i-- ){
@@ -152,6 +154,7 @@ int main(int argc, char *argv[])
      * Then we random shuffle this array and the we pick sequencially.
      * A shuffle code is so simple that make our own instead of using GSL */
 
+    srand(time(NULL)); /* Make your own seed */
     int *number_array[n_toy_types];
     for ( int i = 0 ; i < n_toy_types; i++ ) {
         number_array[i] = malloc( toy_maxcount[i] * sizeof(int));
@@ -164,8 +167,8 @@ int main(int argc, char *argv[])
     int toy_counter[n_toy_types];
     memcpy( toy_counter, toy_maxcount, n_toy_types * sizeof(int));
 
-    if( NULL == ( fp = fopen("submission.csv", "w" ))){
-        perror("submission.csv");
+    if( NULL == ( fp = fopen(SUBMISSIONFILE, "w" ))){
+        perror(SUBMISSIONFILE);
         exit(1);  /* FIXME: cleanup first */
     }
     fprintf( fp, "Gifts\n");
