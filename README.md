@@ -6,7 +6,7 @@ competition at Kaggle.
 It currently contains three tools and some common code.
 
 ## Tools
- * checker - a tool that lakes a submission file and runs a MC simulations of it.
+ * checker - a tool that takes a submission file and runs a MC simulations of it.
  * simulate_bags - a tool that simulates all possible bag combinations of toy types.
  * santabag_glpk - a tool that solved the MIP problem and writes out a solution.
 
