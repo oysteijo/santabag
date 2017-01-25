@@ -3,6 +3,7 @@
 #include "toys.h"
 #include <stdint.h>
 void   random_init(uint64_t seed);
+void   random_free();
 double random_horse();
 double random_ball();
 double random_bike();

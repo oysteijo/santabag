@@ -15,7 +15,7 @@ double simulate_one_bag( char *bag )
 {
     double sum = 0.0;
     for( int toytype = 0; toytype < n_toy_types; toytype++ ){
-        const int n = bag[toytype] - 'a';
+        const int n = bag[toytype];
         for ( int j = 0; j < n; j++)
             sum += random_func[toytype]();
     }
@@ -83,8 +83,6 @@ int main(int argc, char *argv[] )
             if(ck!=2) {fprintf(stderr,"%s, Could not parse: %s\n", toy, spl[i]); exit(-1); }
             submission[linecounter][string_to_toy(toy)]++;
         }
-        for( int i = 0; i < n_toy_types; i++ ) submission[linecounter][i] += 'a';
-        /* printf("%s\n", submission[linecounter]); */
         strsplit_free( spl );
         linecounter++;
     }

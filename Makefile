@@ -1,7 +1,7 @@
 CC      = gcc
 OPT     = -std=gnu99 -Wall -Wextra -O3 -fopenmp
 INCLUDE = -I. -I/usr/include/lpsolve
-LIBS    = -lgsl -lcblas -lgomp -lm
+LIBS    = -lgsl -lcblas -lm -lgomp -lm
 CFLAGS  = $(OPT) $(INCLUDE)
 
 SRC     = $(wildcard *.c)
