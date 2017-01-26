@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
-#include <assert.h>
 #include <time.h>
 
 #define LINE_LEN 256
@@ -72,12 +71,18 @@ int main(int argc, char *argv[])
         if(!strncmp( line, "bag", 3)) continue; /* skip header line */
         double mean_dummy, std_dummy;
         int n = sscanf( line, "%[^,],%lf,%lf,%lf,%lf", varnames[i-1], &mean_dummy, &std_dummy, &means[i-1], &stds[i-1] );
-        assert( n == 5 );
+        if( n != 5 ){
+            fprintf(stderr, "Cannot read line %d in '%s'\n -> %s\n", i, argv[1], line );
+            exit(1);
+        }
     }
     fclose(fp);
 
     /* create problem */
-    lp = glp_create_prob(); assert(lp);
+    if(NULL == (lp = glp_create_prob())){
+        fprintf(stderr, "Cannot create GLPK solver");
+        exit(1);
+    }
     glp_set_prob_name(lp, "Santa's Uncertain Bags");
     glp_set_obj_dir(lp, GLP_MAX);
     

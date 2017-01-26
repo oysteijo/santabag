@@ -12,7 +12,7 @@
 
 int main( int argc, char *argv[])
 {
-    int n = 100;  /* Default number of trials */
+    int n = 100;  /* Default number of trials/samples */
     if( argc == 2) n = atoi(argv[1]);
     
     double toytype_mean[n_toy_types];
@@ -126,6 +126,7 @@ int main( int argc, char *argv[])
 				bag_to_string(workbag), mean, sqrt(var), mean_exp, sqrt(var_exp));
 	}
 	fclose(fp);
+    random_free();
 	printf("Number of bag combinations simulated: %d\n", n_combinations);
 
     return 0;

@@ -1,11 +1,9 @@
-#include "strtools.h"
 #include "toys.h"
 #include "toyrandom.h"
-STRSPLIT_INIT;
-STRSPLIT_FREE_INIT;
-STRSPLIT_LENGTH_INIT;
+#include "bagutils.h"
 #include <omp.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include <gsl/gsl_statistics.h>
 
@@ -74,16 +72,7 @@ int main(int argc, char *argv[] )
     char submission[N_BAGS][n_toy_types+1] = {{0}}; 
     while ( fgets( buffer, sizeof buffer, fp ) ){
         if(!strncmp("Gifts", buffer, 5)) continue; 
-        char **spl = strsplit(strstrip(buffer), ' ');
-        int n_items = strsplit_length( spl );
-        for( int i=0; i < n_items; i++ ){
-            char toy[10];
-            int  id;
-            int  ck = sscanf( strstrip(spl[i]), "%10[^_]_%d", toy, &id );
-            if(ck!=2) {fprintf(stderr,"%s, Could not parse: %s\n", toy, spl[i]); exit(-1); }
-            submission[linecounter][string_to_toy(toy)]++;
-        }
-        strsplit_free( spl );
+        bag_set_from_line(submission[linecounter], buffer);
         linecounter++;
     }
 
@@ -98,6 +87,8 @@ int main(int argc, char *argv[] )
         all[i]= simulate_bag_set( submission, &r );
         reject += r;
     }
+    /* No more simulations - clean up RNGs */
+    random_free();
 
     /* Calculate mean and standard deviation */
     double mean = gsl_stats_mean( all, 1, n);
