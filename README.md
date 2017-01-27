@@ -20,9 +20,10 @@ default paths, I guess typing `make` should build the tools. I've only tried GCC
 so if you use the GCC on command line remember to set `-std=c99` or `-std=gnu99`. I guess other compilers will work as well.
 
 ## Threading
-The simulating tools uses [OpenMP](http://www.openmp.org/) to do naïve multithreading. If you do not want multithreading
+The simulating tools uses [OpenMP](http://www.openmp.org/) to do naïve multithreading. You therefore need a compiler that
+supports OpenMP (Most modern C compilers does). ~~If you do not want multithreading
 or do not want support for this, simply remove the `-fopenmp` compile flag and the `-lgomp` link library. (And
-ignore the pragma warning)
+ignore the pragma warning)~~
 
 ## Bugs
 Oh my! I just realized that the $+mu + \alpha \sigma$ logic may be wrong! Please use $\alpha=0.0$ while I check
@@ -30,3 +31,13 @@ how I could make such a mistake.
 
 ## TODO
 Add lpsolve code. Code cleanup. Use better command line options for the tools. (getopt?)
+
+## Example usage
+
+    $ git clone https://github.com/oysteijo/santabag.git
+    $ cd santabag
+    $ make
+    $ ./simulate_bags 1000000
+    $ ./santabag_glpk simulations.csv
+
+That should create a submission file `submission.csv` which can be submittet to the competition.
